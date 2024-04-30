@@ -1,0 +1,23 @@
+.custom-navbar {
+  background-color: #FFD700; /* Yellow background */
+  border-bottom: 2px solid #000000; /* Black border bottom */
+}
+
+.brand {
+  color: #000000; /* Black color for brand */
+}
+
+.nav-link {
+  color: #000000; /* Black color for links */
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  text-decoration: underline; /* Underline on hover */
+   /* Yellow background on hover */
+  color: #0f0e0e; /* White text color on hover */
+}
+
+.nav-link:disabled {
+  color: #808080; /* Gray color for disabled links */
+}
