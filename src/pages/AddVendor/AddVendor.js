@@ -5,11 +5,16 @@ import MessageBox from '../../Component/MessageBox/MessageBox';
 import '../../Component/MessageBox/MessageBox.css';
 import { useLocation } from 'react-router-dom';
 import URL from "../../URL";
+
 import HolderCreationLogs from '../HolderCreationLogs/HolderCreationLogs';
 function AddVendor() {
   const location = useLocation();
   const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
-  const [license_holderid, setId] = useState('');
+  // const location = useLocation();
+  // const userInfo = location.state.userInfo;
+  // console.log('userInfo in addvendor:', userInfo);
+
+  const [licenseHolderId, setLicenseHolderId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -73,10 +78,12 @@ function AddVendor() {
       if (response.data.Valid) {
         setShowMessage(true);
         setMessage('Vendor Details Saved Successfully..');
-        saveHolderCreationLog();
+        setLicenseHolderId(response.data.license_holderid);
+        saveHolderCreationLog(response.data.license_holderid);
+      
        
        
-     // setMessage('Vendor Details Saved Successfully..');
+    
       setMessageType('success');
       //setContent('Vendor Details Saved Successfully..');
       //navigate('/');
@@ -94,16 +101,15 @@ function AddVendor() {
     navigate('/VendorCreation'); // Navigate to vendorCreation.js component
   };
   
-  const saveHolderCreationLog = async () => {
+  const saveHolderCreationLog = async (licenseHolderId) => {
+    console.log(userInfo);
     try {
-    
       const data = {
         userInfo,
-        license_holderid,
+        license_holderid: licenseHolderId, // Pass the license holder id here
         name,
       };
-  
-      
+      console.log(data);
       const response = await axios.post(URLHolderlogs, data);
   
       if (!response.data.success) {

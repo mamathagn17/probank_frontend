@@ -47,6 +47,7 @@ function LicenseRequestPage() {
   const URLAPIMarkAsReject = URL + "api/Licenserequest/MarkAsReject";
   const URLAPIMarkpendingRenewal=URL + "api/Licenserequest/MarkAsPendingRenewal";
   const URLAPIRequestAction=URL + "api/Licenserequest/LogLicenseRequestAction";
+  const URLToUpdateField = URL + "api/Licenserequest/UpdateField";
   const [showModuleModal, setShowModuleModal] = useState(false); 
   const [searchQuery, setSearchQuery] = useState('');
   const [rejectRemarks, setRejectRemarks] = useState('');
@@ -316,6 +317,43 @@ const handleReject = async () => {
         console.error('Error:', error);
       }
     };
+    const handleFieldUpdate = async (fieldName, requestId, updatedValue) => {
+      try {
+        // Make the API call to update the field
+        const response = await axios.post(URLToUpdateField, {
+          requestId: requestId,
+          fieldName: fieldName,
+          updatedValue: updatedValue
+        });
+  
+     
+        if (response.data.Success) {
+         
+          fetchLicenseRequestList();
+        } else {
+         
+          console.error('Error updating field:', fieldName);
+         
+        }
+      } catch (error) {
+        console.error('Error updating field:', fieldName, error);
+        
+      }
+    };
+
+
+    const handleRemarksChange = async (index, value) => {
+      const updatedRequestList = [...requestList];
+      updatedRequestList[index].remarks = value;
+      setRequestList(updatedRequestList);
+    
+      try {
+        await handleFieldUpdate('remarks', updatedRequestList[index].recid, value);
+      } catch (error) {
+        console.error('Error updating remarks:', error);
+        // Handle error if needed
+      }
+    };
   return (
     <div className="container" data-aos="fade-up">
       <div className="row">
@@ -536,7 +574,13 @@ const handleReject = async () => {
       <td>{request.utr_number}</td>
       {/* <td>{request.client_id}</td>
       <td>{request.branch_id}</td> */}
-      <td>{request.remarks}</td>
+      <td>
+                                <input
+                                  type="text"
+                                  value={request.remarks}
+                                  onChange={(e) => handleRemarksChange(index, e.target.value)}
+                                />
+                              </td>
       <td>{request.product_name}</td>
     <td> {(() => {
     switch (request.renewal_status) {

@@ -29,6 +29,7 @@ import NewLicenseRequestLogs from './pages/NewLicenseRequestLogs/NewLicenseReque
 import MonthlyReconciliationLogs from './pages/MonthlyReconciliationLogs.js/MonthlyReconciliationLogs';
 import AnnualReconciliationLogs from './pages/AnnualReconciliationLogs/AnnualReconciliationLogs';
 import HolderCreationLogs from './pages/HolderCreationLogs/HolderCreationLogs';
+import UserAddLogs from './pages/UserAddLogs/UserAddLogs';
 function App() {
   return (
     <BrowserRouter>
@@ -61,6 +62,7 @@ function App() {
         <Route exact path="/MonthlyReconciliationLogs" element={<MonthlyReconciliationLogs/>}/>
         <Route exact path="/AnnualReconciliationLogs" element={<AnnualReconciliationLogs/>}/>
         <Route exact path="/HolderCreationLogs" element={<HolderCreationLogs/>}/>
+        <Route exact path="/UserAddLogs" element={<UserAddLogs/>}/>
       
       
       

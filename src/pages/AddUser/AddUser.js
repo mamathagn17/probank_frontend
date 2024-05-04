@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import MessageBox from '../../Component/MessageBox/MessageBox';
 import '../../Component/MessageBox/MessageBox.css';
 import URL from "../../URL";
+import { useLocation } from 'react-router-dom';
 function AddUser() {
- 
+  const location = useLocation();
+  const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
   const [user_name, setusername] = useState('');
   const [role, setRole] = useState('');
   const [roles, setRoles] = useState([]);
-  // const [password, setPassword] = useState([]);
+  const [password, setPassword] = useState([]);
   const [isError, setIsError] = useState(false);
   const [content, setContent] = useState('');
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ function AddUser() {
   const [showMessage, setShowMessage] = useState(false);
   const URLAPIfetchRole= URL + "api/adduser/fetchRoles";
   const URLadduser= URL + "api/adduser/adduser";
+
   const clearMessage = () => {
     setMessage('');
     setMessageType('');
@@ -53,7 +56,8 @@ const fetchRoles = async () => {
       const response = await axios.post( URLadduser, {
        user_name:user_name,
        role_id:role,
-      //  password:password
+       userInfo:userInfo
+       
       });
 
       if (response.data.Valid) {
@@ -61,7 +65,7 @@ const fetchRoles = async () => {
         setShowMessage(true);
       setMessage('User Saved Successfully..');
       setMessageType('success');
-      //navigate('/');
+    
     } else {
       setShowMessage(true);
       setIsError(true);
@@ -120,7 +124,7 @@ const fetchRoles = async () => {
     style={{ width: '120%' }}
   
     className="form-select">
-    <option value="">Select Role Name</option> 
+    <option value="">Select Role Name</option> {/* Add a default option */}
     {roles.map(role => (
         <option key={role.role_id} value={role.role_id}>
             {role.role_name}
@@ -129,22 +133,7 @@ const fetchRoles = async () => {
 </select>
                                               <div className="dropdown-arrow"></div>
                                     </div>
-                                    {/* <div className="mb-3">
-                            <label for="password" className="form-label">Password<span className="text-danger">*</span></label>
-                            <input
-                              onChange={(e) => setPassword(e.target.value)}
-                              type="password"
-                              autoComplete="off"
-                              className="form-control"
-                              name="password"
-                              required
-                              id="password"
-                              placeholder="Enter Password"
-                            />
-                        </div> */}
-
-                        
-                        
+                                  
                         
                         <div className="text-center">
                         <button type="submit" className="btn btn-outline-success" style={{ marginRight: '10px' }}>Save </button>

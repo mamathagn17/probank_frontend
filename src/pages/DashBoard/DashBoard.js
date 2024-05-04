@@ -62,6 +62,7 @@ const Dashboard = () => {
               <NavDropdown.Item href="/MonthlyReconciliationLogs">Monthly Reconciliation Logs</NavDropdown.Item>
               <NavDropdown.Item href="/AnnualReconciliationLogs">Annual Reconciliation Logs</NavDropdown.Item>
               <NavDropdown.Item href="/HolderCreationLogs">Holder Creation Logs</NavDropdown.Item>
+              <NavDropdown.Item href="/UserAddLogs">User Creation Logs</NavDropdown.Item>
              
              
              
