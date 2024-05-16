@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MessageBox from '../../Component/MessageBox/MessageBox';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import URL from "../../URL";
+import { MdArrowRight } from 'react-icons/md';
 function UserList() {
+  const [user_id, setId] = useState('');
   const [userList, setUserList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
@@ -17,13 +22,26 @@ function UserList() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [showMessage, setShowMessage] = useState(false);
+  const [role, setRole] = useState('');
+  const [roles, setRoles] = useState([]);
+  const [roleList, setRoleList] = useState([]);
   const navigate = useNavigate();
+  const [isError, setIsError] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const URLgetUser= URL + "api/userlist/GetUser";
-  const URLDeleteusers= URL + "api/userlist/DeleteUsers";
   const URLuserdetails= URL + "api/userlist/User_Details";
   const URLuserupdate= URL + "api/userlist/User_update";
+  const URLAPIGetRole =URL+ "api/userlist/fetchrole";
+  const URLdeleteusers = URL + "api/userlist/DeleteUsers";
+  const [showPassword, setShowPassword] = useState(false);
+
+// Function to toggle password visibility
+const togglePasswordVisibility = () => {
+  setShowPassword(!showPassword);
+};
   useEffect(() => {
     fetchUserList();
+    fetchRoleList();
   }, [currentPage]);
   const handleAdduser = () => {
     navigate('/AddUser'); 
@@ -75,25 +93,30 @@ function UserList() {
   };
 
   const handleDeleteUsers = async () => {
+  
+    setShowConfirmation(true);
+  
+  };
+  const handleConfirmDelete = async () => {
+    setShowConfirmation(false); // Hide confirmation message box
     try {
-      const selectedIds = selectedUsers.map(user => user.id);
-      const response = await axios.post(URLDeleteusers, {
+      const selectedIds = selectedUsers.map(user => user.user_id);
+      const response = await axios.post(URLdeleteusers, {
         ids: selectedIds
       });
-
+  
       if (response.data.Valid) {
-        console.log('Users deleted successfully');
+        setMessage(response.data.message);
+        setMessageType('success');
+        setShowMessage(true);
         fetchUserList();
       } else {
         console.error('Failed to delete users:', response.data.message);
-        handleRequestError(response.data.message);
       }
     } catch (error) {
       console.error('Error deleting users:', error);
-      handleRequestError('Error deleting users.');
     }
   };
-
   const handleEdit = (user) => {
     setSelectedUser(user);
     setShowModal(true);
@@ -154,6 +177,21 @@ function UserList() {
   const prevPage = () => {
     setCurrentPage(currentPage - 1);
   };
+  const handleCancelDelete = () => {
+    setShowConfirmation(false); // Hide confirmation message box
+  };
+
+  const fetchRoleList = async () => {
+    try {
+      const response = await axios.get(URLAPIGetRole);
+      setRoles(response.data.roles);
+    } catch (error) {
+      setIsError(true);
+      setMessage('Error occurred while fetching Roles.');
+      console.error('Error:', error);
+    }
+  };
+
 
   return (
     <div className="container" data-aos="fade-up">
@@ -170,6 +208,9 @@ function UserList() {
                 <button className="btn btn-outline-success ml-auto" onClick={handleAdduser}>
                   Add User
                 </button>
+                <button onClick={handleDeleteUsers} className="btn btn-outline-danger" >
+                Delete Selected
+              </button>
               </div>
               </div>
             </div>
@@ -187,7 +228,7 @@ function UserList() {
                             <th>Sl.No</th>
                             <th>User ID</th>
                             <th>User Name</th>
-                            <th>Role ID</th>
+                            <th>Role Name</th>
                             <th>Password</th>
                             <th>Edit</th>
                           </tr>
@@ -199,14 +240,16 @@ function UserList() {
                                 <input
                                   type="checkbox"
                                   onChange={() => handleCheckboxToggle(user)}
-                                  checked={selectedUsers.some(selectedUser => selectedUser.id === user.id)}
+                                  checked={selectedUsers.some(selectedUser => selectedUser.user_id === user.user_id)}
                                 />
                               </td>
                               <td>{(currentPage - 1) * perPage + index + 1}</td>
                               <td>{user.user_id}</td>
                               <td>{user.user_name}</td>
-                              <td>{user.role_id}</td>
-                              <td>{user.password}</td>
+                              <td>{user.role_name}</td>
+                              <td>
+        <input type="password" value={user.password} disabled />
+      </td>
                               <td>
                                 <button onClick={() => handleEdit(user)} className="btn btn-primary">Edit</button>
                               </td>
@@ -228,109 +271,130 @@ function UserList() {
         </div>
       </div>
      )}
-     {showModal && userDetails && (
-      <div className="modal fade show" tabIndex="-1" role="dialog" aria-hidden="true" style={{ display: 'block' }}>
-      <div className="modal-dialog modal-dialog-centered modal-xl">
+     {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to delete selected records?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+    {showModal && userDetails && (
+  <div className="modal fade show" tabIndex="-1" role="dialog" aria-hidden="true" style={{ display: 'block' }}>
+    <div className="modal-dialog modal-dialog-centered modal-xl">
       <div className="modal-content" style={{ width: '80%', maxWidth: '100%', margin: 'auto' }}>
-          <div className="modal-header">
-            <h5 className="modal-title">Edit User Information</h5>
-            <button type="button" className="close" onClick={() => setShowModal(false)}>
-              &times;
-            </button>
-          </div>
-          <div className="modal-body">
-            <div className="row">
-              <div className="col-12 col-sm-10">
-                <div className="row">
-                  <div className="col-12 col-md-2 mb-3">
-                    <label className="title">User ID</label>
-                    <div>
-                      <input
-                        type="text"
-                        autoComplete="off"
-                        className="form-control only-positive-decimal"
-                        name="UserID"
-                        id="txtVendorIDEdit"
-                        value={userDetails.user_id} 
-                        readOnly
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="col-12 col-md-2 mb-3">
-                    <label className="title">User Name</label>
-                    <div>
-                      <input
-                        type="text"
-                        autoComplete="off"
-                        className="form-control"
-                        name="userName"
-                        id="txtuserNameEdit"
-                        value={userDetails.user_name} 
-                        onChange={(e) => setUserDetails({ ...userDetails, user_name: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-12 col-md-4 mb-3">
-                    <label className="title">Role id</label>
-                    <div>
-                      <input
-                        type="text"
-                        autoComplete="off"
-                        className="form-control"
-                        name="roleid"
-                        id="txtroleidEdit"
-                        value={userDetails.role_id} 
-                        style={{width:'50%'}}
-                        onChange={(e) => setUserDetails({ ...userDetails, role_id: e.target.value })}
-                        placeholder="Enter Email"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-12 col-md-2 mb-3">
-                    <label className="title" style={{marginLeft:'-110px'}}>Password</label>
-                    <div>
-                      <input
-                        type="password"
-                        autoComplete="off"
-                        className="form-control"
-                        name="password"
-                        id="txtpasswordEdit"
-                        value={userDetails.password} 
-                        style={{width:'180%' ,marginLeft:'-110px'}}
-                        onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })}
-                        required
-                      />
-                    </div>
+        <div className="modal-header">
+          <h5 className="modal-title">Edit User Information</h5>
+          <button type="button" className="close" onClick={() => setShowModal(false)}>
+            &times;
+          </button>
+        </div>
+        <div className="modal-body">
+          <div className="row">
+            <div className="col-12 col-sm-10">
+              <div className="row">
+                <div className="col-12 col-md-2 mb-3">
+                  <label className="title">User ID</label>
+                  <div>
+                    <input
+                      type="text"
+                      autoComplete="off"
+                      className="form-control only-positive-decimal"
+                      name="UserID"
+                      id="txtVendorIDEdit"
+                      value={userDetails.user_id} 
+                      readOnly
+                      required
+                    />
                   </div>
                 </div>
+                <div className="col-12 col-md-2 mb-3">
+                  <label className="title">User Name</label>
+                  <div>
+                    <input
+                      type="text"
+                      autoComplete="off"
+                      className="form-control"
+                      name="userName"
+                      id="txtuserNameEdit"
+                      style={{width:'150%'}}
+                      value={userDetails.user_name} 
+                      onChange={(e) => setUserDetails({ ...userDetails, user_name: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="col-12 col-md-3 mb-3">
+                  <label className="title"  style={{marginLeft:'50px'}} >Role Name<span className="text-danger">*</span></label>
+                  <select
+                    id="roleSelect"
+                    className="form-select"
+                    value={userDetails.role_id}
+                    onChange={(e) => setUserDetails({ ...userDetails, role_id: e.target.value })}
+                    style={{width:'100%', marginLeft:'50px'}}
+                  >
+                    <option value="">Select Role Name</option>
+                    {roles.map(role=> (
+                      <option key={role.role_id} value={role.role_id}>
+                        {role.role_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-12 col-md-3 mb-3" style={{ position: 'relative' }}>
+  <label className="title" style={{ marginLeft: '50px' }}>Password</label>
+  <div className="password-input" style={{ position: 'relative' }}>
+    <input
+      type={showPassword ? "text" : "password"}
+      autoComplete="off"
+      className="form-control"
+      name="password"
+      id="txtpasswordEdit"
+      value={userDetails.password} 
+      style={{ width: '180px' ,marginLeft: '50px'  }}
+      onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })}
+      required
+    />
+    <span
+      style={{ position: 'absolute', right: '-70px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }}
+      onClick={togglePasswordVisibility}
+    >
+      {showPassword ? (
+        <FontAwesomeIcon icon={faEyeSlash} />
+      ) : (
+        <FontAwesomeIcon icon={faEye} />
+      )}
+    </span>
+  </div>
+</div>
+
               </div>
-              <div className="clearfix"></div>
             </div>
           </div>
-          <div className="modal-footer">
-            <div className="row">
-              <div className="col">
-                <div className="d-flex justify-content-between">
-                  <button onClick={handleUpdate} className="btn btn-success">
-                    Update
-                  </button>
-                </div>
-                {showMessage && (
-                  <MessageBox
-                    message={message}
-                    type={messageType}
-                    onClose={clearMessage}
-                  />
-                )}
+        </div>
+        <div className="modal-footer">
+          <div className="row">
+            <div className="col">
+              <div className="d-flex justify-content-between">
+                <button onClick={handleUpdate} className="btn btn-success">
+                  Update
+                </button>
               </div>
+              {showMessage && (
+                <MessageBox
+                  message={message}
+                  type={messageType}
+                  onClose={clearMessage}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-      )}
+  </div>
+)}
+
       
     </div>
   );

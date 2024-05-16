@@ -29,7 +29,7 @@ function VendorCreation() {
   const URLgetuser = URL + "api/vendor/GetUserlist";
   const URLupdate = URL + "api/vendor/updateUser";
   const URLvendordetails = URL+"api/vendor/Vendor_Details";
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [categoryList, setCategoryList] = useState([]);
   // const [content, setContent] = useState('');
  const navigate = useNavigate();
@@ -112,26 +112,58 @@ const validatePhone = (phone) => {
       setSelectedUsers([...selectedUsers, user]);
     }
   };
-  const handleDeleteUsers = async () => {
-    try {
-      const selectedIds = selectedUsers.map(user => user.license_holderid);
-      const response = await axios.post(URLdeleteusers, {
-        ids: selectedIds
-      });
+//   const handleDeleteUsers = async () => {
+//   const confirmDelete = window.confirm("Are you sure you want to delete selected records?");
+  
+//   if (confirmDelete) {
+//     try {
+//       const selectedIds = selectedUsers.map(user => user.license_holderid);
+//       const response = await axios.post(URLdeleteusers, {
+//         ids: selectedIds
+//       });
 
-      if (response.data.Valid) {
-        setMessage(response.data.message);
+//       if (response.data.Valid) {
+//         setMessage(response.data.message);
+//         setMessageType('success');
+//         setShowMessage(true);
+//         fetchUserList();
+//       } else {
+//         console.error('Failed to delete users:', response.data.message);
+//       }
+//     } catch (error) {
+//       console.error('Error deleting users:', error);
+//     }
+//   }
+// };
+const handleDeleteUsers = async () => {
+  
+  setShowConfirmation(true);
 
-        setMessageType('success');
-        setShowMessage(true);
-        fetchUserList();
-      } else {
-        console.error('Failed to delete users:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error deleting users:', error);
+};
+const handleConfirmDelete = async () => {
+  setShowConfirmation(false); // Hide confirmation message box
+  try {
+    const selectedIds = selectedUsers.map(user => user.license_holderid);
+    const response = await axios.post(URLdeleteusers, {
+      ids: selectedIds
+    });
+
+    if (response.data.Valid) {
+      setMessage(response.data.message);
+      setMessageType('success');
+      setShowMessage(true);
+      fetchUserList();
+    } else {
+      console.error('Failed to delete users:', response.data.message);
     }
-  };
+  } catch (error) {
+    console.error('Error deleting users:', error);
+  }
+};
+
+const handleCancelDelete = () => {
+  setShowConfirmation(false); // Hide confirmation message box
+};
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -459,6 +491,15 @@ const validatePhone = (phone) => {
         </div>
       </div>
        )}
+       {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to delete selected records?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
       {showModal && userDetails && (
        <div className="modal fade show" tabIndex="-1" role="dialog" aria-hidden="true" style={{ display: 'block' }}>
          <div className="modal-dialog modal-dialog-centered modal-xl">
@@ -593,6 +634,7 @@ const validatePhone = (phone) => {
           onClose={clearMessage}
         />
       )}
+       
   </div>
 </div>
 

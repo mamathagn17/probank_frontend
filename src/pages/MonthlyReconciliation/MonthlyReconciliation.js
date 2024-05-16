@@ -3,7 +3,7 @@ import axios from 'axios';
 import URL from "../../URL";
 import { useLocation } from 'react-router-dom';
 import '../../Component/MessageBox/MessageBox.css';
-
+import MessageBox from '../../Component/MessageBox/MessageBox';
 function MonthlyReconciliation() {
   const location = useLocation();
   const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
@@ -21,7 +21,12 @@ function MonthlyReconciliation() {
   const [year, setYear] = useState('');
   const [years, setYears] = useState([]);
   const [content, setContent] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
   const perPage = 10;
+
   const URLAPIfetchclient = URL + "api/Licenserequest/fetchclients";
   const URLAPIMonthlylist = URL + "api/monthlyreconciliation/MonthlyList";
   const URLToUpdateField = URL + "api/monthlyreconciliation/UpdateField";
@@ -38,29 +43,45 @@ function MonthlyReconciliation() {
   const handleClientChange = (event) => {
     setClient(event.target.value);
   };
+
+  const handleCancelDelete = () => {
+    setShowConfirmation(false); // Hide confirmation message box
+  };
+  const clearMessage = () => {
+    setMessage('');
+    setMessageType('');
+    setShowMessage(false);
+  };
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
   const markRecordsAsPending = async () => {
-    try {
-      const selectedIds = selectedRequest.map(request => request.client_id);
-      if (selectedIds.length === 0) {
-        alert("Please select at least one record.");
-        return;
-      }
+    // try {
+    //   const selectedIds = selectedRequest.map(request => request.client_id);
+    //   if (selectedIds.length === 0) {
+    //     alert("Please select at least one record.");
+    //     return;
+    //   }
   
-      const response = await axios.post(URLAPIMarkAsPending, {
-        clientIds: selectedIds // Pass an array of client IDs to mark as pending
-      });
+    //   const response = await axios.post(URLAPIMarkAsPending, {
+    //     clientIds: selectedIds // Pass an array of client IDs to mark as pending
+    //   });
   
-      if (response.data.Success) {
-        handleMarkPendingLogs();
-        fetchMonthlyReconciliation(); // Refresh the list after updating
-        setSelectedRequest([]); // Clear selected records
-        setSelectAll(false); // Uncheck select all checkbox
-      } else {
-        console.error('Failed to mark records as pending.');
-      }
-    } catch (error) {
-      console.error('Error marking records as pending:', error);
-    }
+    //   if (response.data.Success) {
+    //     handleMarkPendingLogs();
+    //     fetchMonthlyReconciliation(); // Refresh the list after updating
+    //     setSelectedRequest([]); // Clear selected records
+    //     setSelectAll(false); // Uncheck select all checkbox
+    //   } else {
+    //     console.error('Failed to mark records as pending.');
+    //   }
+    // } catch (error) {
+    //   console.error('Error marking records as pending:', error);
+    // }
+    setShowConfirmation(true);
   };
   
 
@@ -142,6 +163,32 @@ function MonthlyReconciliation() {
          console.error('Error:', error);
      }
  };
+
+ const handleConfirmPending= async () => {
+  setShowConfirmation(false); // Hide confirmation message box
+  try {
+    const selectedIds = selectedRequest.map(request => request.client_id);
+      if (selectedIds.length === 0) {
+        alert("Please select at least one record.");
+        return;
+      }
+  
+      const response = await axios.post(URLAPIMarkAsPending, {
+        clientIds: selectedIds // Pass an array of client IDs to mark as pending
+      });
+  
+      if (response.data.Success) {
+        handleMarkPendingLogs();
+        fetchMonthlyReconciliation(); // Refresh the list after updating
+        setSelectedRequest([]); // Clear selected records
+        setSelectAll(false); // Uncheck select all checkbox
+      } else {
+        console.error('Failed to mark records as pending.');
+      }
+    } catch (error) {
+      console.error('Error marking records as pending:', error);
+    }
+};
 
   const handleSelectAllToggle = () => {
     if (selectAll) {
@@ -411,6 +458,33 @@ function MonthlyReconciliation() {
                 <button className="btn btn-outline-danger" style={{ width: '80px', marginLeft: '10px' }} onClick={handleClearSelection}>
                   Clear
                 </button>
+                <div className="pagination" style={{ marginTop: '10px' }}>
+      <button type="button" onClick={prevPage} disabled={currentPage === 1}>
+  Prev
+</button>
+
+            <span>{currentPage}</span>
+            <button type="button" onClick={nextPage} disabled={requestList.length < perPage}>
+  Next
+</button>
+
+          </div>
+          {showMessage && (
+        <MessageBox
+          message={message}
+          type={messageType}
+          onClose={clearMessage}
+        />
+      )}
+       {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to Mark it as Pending?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmPending}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
           </div>

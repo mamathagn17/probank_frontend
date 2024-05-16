@@ -28,11 +28,13 @@ function ClientCategoryConfiguration() {
     setMessage('');
     setMessageType('');
     setShowMessage(false);
+    setCategory('');
   };
+  
   useEffect(() => {
     
     fetchCategoryList();
-  }, [currentPage]); 
+  }, [currentPage,perPage]); 
   const nextPage = () => {
     setCurrentPage(currentPage + 1);
   };
@@ -52,11 +54,13 @@ function ClientCategoryConfiguration() {
       });
 
       if (response.data.Valid) {
+        setCategory('');
        
         setShowMessage(true);
       setMessage('Category Name Saved Successfully..');
       setMessageType('success');
-      //navigate('/');
+      fetchCategoryList();
+
     } else {
       setShowMessage(true);
       setIsError(true);
@@ -166,13 +170,15 @@ function ClientCategoryConfiguration() {
         </div>
       </div>
       <div className="pagination">
-            <button onClick={prevPage} disabled={currentPage === 1}>
-              Prev
-            </button>
+      <button type="button" onClick={prevPage} disabled={currentPage === 1}>
+  Prev
+</button>
+
             <span>{currentPage}</span>
-            <button onClick={nextPage} disabled={categoryList.length < perPage}>
-              Next
-            </button>
+            <button type="button" onClick={nextPage} disabled={categoryList.length < perPage}>
+  Next
+</button>
+
           </div>
     </div>
     </div>

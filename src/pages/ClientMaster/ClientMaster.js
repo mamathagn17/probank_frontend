@@ -28,6 +28,7 @@ function ClientCategory() {
   const perPage = 10;
   const [selectAll, setSelectAll] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedClientIds, setSelectedClientIds] = useState([]);
   const URLgetclientlist = URL + "api/cliencategories/GetClientList";
   const URLfetchcategories = URL + "api/cliencategories/clientCategories";
@@ -107,8 +108,15 @@ function ClientCategory() {
   console.error('Error updating Client information:', error);
 }
 };
-
 const handleDeleteUsers = async () => {
+  
+  setShowConfirmation(true);
+
+};
+
+
+const handleConfirmDelete = async () => {
+  setShowConfirmation(false); 
   try {
     const selectedIds = selectedUsers.map(user => user.client_id);
     const response = await axios.post(URLdeleteclients, {
@@ -128,6 +136,9 @@ const handleDeleteUsers = async () => {
   } catch (error) {
     console.error('Error deleting clients:', error);
   }
+};
+const handleCancelDelete = () => {
+  setShowConfirmation(false); // Hide confirmation message box
 };
 
 
@@ -462,6 +473,15 @@ const handleDeleteUsers = async () => {
           </div>
             </div>
               )}
+              {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to delete selected records?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
                {showModal && clientDetails && (
        <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-hidden="true">
        <div className="modal-dialog modal-dialog-centered modal-xl">

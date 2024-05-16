@@ -63,6 +63,12 @@ function AnnualReconciliationPending() {
   const handleYearChange = (event) => {
     setYear(event.target.value);
   };
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -350,6 +356,17 @@ function AnnualReconciliationPending() {
                 <button className="btn btn-outline-danger" style={{ width: '180px', marginLeft: '10px' }}>
                   Trigger Termination
                 </button>
+                <div className="pagination" style={{ marginTop: '10px' }}>
+      <button type="button" onClick={prevPage} disabled={currentPage === 1}>
+  Prev
+</button>
+
+            <span>{currentPage}</span>
+            <button type="button" onClick={nextPage} disabled={requestList.length < perPage}>
+  Next
+</button>
+
+          </div>
               </div>
             </div>
           </div>

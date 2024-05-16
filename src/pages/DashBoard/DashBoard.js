@@ -28,6 +28,7 @@ const Dashboard = () => {
               <NavDropdown.Item href="/UserList">User List</NavDropdown.Item>
               <NavDropdown.Item href="/AddUser">Add User</NavDropdown.Item>
               <NavDropdown.Item href="/RoleCreation">Role Creation</NavDropdown.Item>
+              <NavDropdown.Item href="/Permission">Permission</NavDropdown.Item>
               
             </NavDropdown>
             <NavDropdown title={<span><FaCog /> Configurations</span>} id="configurations-dropdown">
@@ -69,6 +70,7 @@ const Dashboard = () => {
             </NavDropdown>
             <NavDropdown title={<span><FaUser/> My Profile</span>} id="license-profile-dropdown">
               <NavDropdown.Item href="/Login">LogOut </NavDropdown.Item>
+             
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

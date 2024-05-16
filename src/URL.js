@@ -6,4 +6,4 @@ const URL = developmentURL;
 
 export default URL;
 
-// NOTES: Change the URL to productionURL while deploying to live. Change it to developmentURL while testing.
+// NOTES: Change the URL to productionURL while deploying to live. Change it to developmentURL while testing.y

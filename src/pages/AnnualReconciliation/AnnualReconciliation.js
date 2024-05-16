@@ -54,6 +54,12 @@ function AnnualReconciliation() {
         console.error('Error:', error);
     }
   };
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
   const markRecordsAsPending = async () => {
     try {
       const selectedIds = selectedRequest.map(request => request.client_id);
@@ -383,6 +389,17 @@ function AnnualReconciliation() {
                 <button className="btn btn-outline-danger" style={{ width: '80px', marginLeft: '10px' }} onClick={handleClearSelection}>
                   Clear
                 </button>
+                <div className="pagination" style={{ marginTop: '10px' }}>
+      <button type="button" onClick={prevPage} disabled={currentPage === 1}>
+  Prev
+</button>
+
+            <span>{currentPage}</span>
+            <button type="button" onClick={nextPage} disabled={requestList.length < perPage}>
+  Next
+</button>
+
+          </div>
               </div>
             </div>
           </div>

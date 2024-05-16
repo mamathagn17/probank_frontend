@@ -124,6 +124,15 @@ function MonthlyReconciliationPending() {
     }
   };
 
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+
   const fetchMonthlyPendingList = async () => {
     try {
       const response = await axios.post(URLAPIPendinglist, {
@@ -377,6 +386,11 @@ function MonthlyReconciliationPending() {
                 <button className="btn btn-outline-danger" style={{ width: '180px', marginLeft: '10px' }}>
                   Trigger Termination
                 </button>
+                <div className="pagination" style={{ marginTop: '10px' }}>
+              <button onClick={prevPage} disabled={currentPage === 1} className="btn btn-primary">Prev</button>
+              <span>{currentPage}</span>
+              <button onClick={nextPage} disabled={requestList.length < perPage} className="btn btn-primary">Next</button>
+            </div>
               </div>
             </div>
           </div>

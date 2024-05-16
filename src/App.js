@@ -30,6 +30,8 @@ import MonthlyReconciliationLogs from './pages/MonthlyReconciliationLogs.js/Mont
 import AnnualReconciliationLogs from './pages/AnnualReconciliationLogs/AnnualReconciliationLogs';
 import HolderCreationLogs from './pages/HolderCreationLogs/HolderCreationLogs';
 import UserAddLogs from './pages/UserAddLogs/UserAddLogs';
+import Permission from './pages/Permission/Permission';
+
 function App() {
   return (
     <BrowserRouter>
@@ -63,10 +65,11 @@ function App() {
         <Route exact path="/AnnualReconciliationLogs" element={<AnnualReconciliationLogs/>}/>
         <Route exact path="/HolderCreationLogs" element={<HolderCreationLogs/>}/>
         <Route exact path="/UserAddLogs" element={<UserAddLogs/>}/>
+        <Route exact path="/Permission" element={<Permission/>}/>
+     
       
       
       
-
 
       </Routes>
     </BrowserRouter>

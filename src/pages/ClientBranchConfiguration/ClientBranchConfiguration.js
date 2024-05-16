@@ -16,9 +16,10 @@ function ClientBranchConfiguration() {
   const [showMessage, setShowMessage] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [requestList, setRequestList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Define currentPage state
-  const [perPage, setPerPage] = useState(10); // Define perPage state
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [branchList, setBranchList] = useState([]);
   const navigate = useNavigate();
+  const perPage = 10;
   const URLAPIfetchclient = URL + "api/branch/fetchclient";
   const URLaddbranch = URL + "api/branch/addbranch";
 
@@ -38,6 +39,17 @@ function ClientBranchConfiguration() {
     fetchBranchList();
   }, [currentPage, perPage]);
 
+
+  const nextPage = () => {
+    if (requestList.length === perPage) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   const fetchBranchList = async () => {
     try {
       const response = await axios.post(URLAPIGetBranch, {
@@ -189,6 +201,15 @@ function ClientBranchConfiguration() {
                       </table>
                     </div>
                   </div>
+                  <div className="pagination">
+            <button onClick={prevPage} disabled={currentPage === 1}>
+              Prev
+            </button>
+            <span>{currentPage}</span>
+            <button onClick={nextPage} >
+              Next
+            </button>
+          </div>
                 </div>
               </div>
               {showMessage && (
