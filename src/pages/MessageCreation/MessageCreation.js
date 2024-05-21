@@ -21,12 +21,17 @@ function MessageCreation() {
     setMessage('');
     setShowMessage(false);
   };
-  
   const perPage = 10;
+
   useEffect(() => {
     fetchmsgList();
   }, [currentPage]); 
-
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
   const handleSelectAllToggle = () => {
     if (selectAll) {
       setSelectedRequest([]);
@@ -81,6 +86,7 @@ function MessageCreation() {
       if (response.data.Valid) {
         setShowMessage(true);
         setMessage('Message saved successfully');
+        fetchmsgList();
       } else {
         setShowMessage(true);
         setIsError(true);
@@ -133,8 +139,9 @@ function MessageCreation() {
                     style={{ width: '100%' }} // Set width to 100%
                     required
                   >
-                    <option value="warning">1</option>
-                    <option value="terminate">2</option>
+                    
+                    <option value="warning">Warning</option>
+                    <option value="terminate">terminate</option>
                   </select>
                 </div>
               </div>
@@ -192,6 +199,17 @@ function MessageCreation() {
                 onClose={clearMessage}
               />
             )}
+            <div className="pagination" style={{ marginTop: '10px' }}>
+      <button type="button" onClick={prevPage} disabled={currentPage === 1}>
+  Prev
+</button>
+
+            <span>{currentPage}</span>
+            <button type="button" onClick={nextPage} disabled={requestList.length < perPage}>
+  Next
+</button>
+
+          </div>
           </div>
         </div>
       </div>

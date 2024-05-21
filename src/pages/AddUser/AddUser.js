@@ -119,18 +119,18 @@ const fetchRoles = async () => {
                         <div className="col-12 col-sm-6 mb-3">
                                         <label className="form-label">Select Role Name:</label>
                                         <select
-    value={role}
-    onChange={(e) => setRole(e.target.value)}
-    style={{ width: '120%' }}
-  
-    className="form-select">
-    <option value="">Select Role Name</option> {/* Add a default option */}
-    {roles.map(role => (
-        <option key={role.role_id} value={role.role_id}>
-            {role.role_name}
-        </option>
-    ))}
-</select>
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value)}
+                                        style={{ width: '120%' }}
+                                      
+                                        className="form-select">
+                                        <option value="">Select Role Name</option> {/* Add a default option */}
+                                        {roles.map(role => (
+                                            <option key={role.role_id} value={role.role_id}>
+                                                {role.role_name}
+                                            </option>
+                                        ))}
+                                    </select>
                                               <div className="dropdown-arrow"></div>
                                     </div>
                                   

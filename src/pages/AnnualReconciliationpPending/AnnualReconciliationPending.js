@@ -38,7 +38,10 @@ function AnnualReconciliationPending() {
       }
   
       const response = await axios.post(URLAPIMarkAsCompleted, {
-        clientIds: selectedIds // Pass an array of client IDs to mark as pending
+        requests: selectedRequest.map(({ client_id, month, year }) => ({
+          client_id,
+          year
+      }))
       });
   
       if (response.data.Success) {
@@ -116,16 +119,28 @@ function AnnualReconciliationPending() {
     setSelectAll(!selectAll);
   };
 
-  const handleCheckboxToggle = (request) => {
-    const isSelected = selectedRequest.some(selected => selected.client_id === request.client_id);
+   const handleCheckboxToggle = (request) => {
+    const isSelected = selectedRequest.some(
+      selected => selected.client_id === request.client_id && 
+                  selected.year === request.year
+    );
   
     if (isSelected) {
-      setSelectedRequest(selectedRequest.filter(selected => selected.client_id !== request.client_id));
+      setSelectedRequest(
+        selectedRequest.filter(
+          selected => !(selected.client_id === request.client_id && 
+                        selected.year === request.year)
+        )
+      );
     } else {
       setSelectedRequest([...selectedRequest, request]);
     }
+    console.log('Selected Requests:', [...selectedRequest, request].map(req => ({
+      client_id: req.client_id,
+      month: req.month,
+      year: req.year
+    })));
   };
-
   const fetchAnnualPendingList = async () => {
     try {
       const response = await axios.post(URLAPIPendinglist, {
@@ -299,7 +314,10 @@ function AnnualReconciliationPending() {
                                   <input
                                     type="checkbox"
                                     onChange={() => handleCheckboxToggle(request)}
-                                    checked={selectedRequest.some(selected => selected.client_id === request.client_id)}
+                                    checked={selectedRequest.some(
+                                      selected => selected.client_id === request.client_id && 
+                                                  selected.year === request.year
+                                    )}
                                   />
                                 </td>
                                 <td>{(currentPage - 1) * perPage + index + 1}</td>
@@ -318,7 +336,18 @@ function AnnualReconciliationPending() {
                                     return null; // Handle unknown status values if necessary
                                 }
                               })()}</td>
-                                <td>{request.warning_status}</td>
+                                 <td> {(() => {
+                                switch (request.warning_status) {
+                                  case 0:
+                                    return <span style={{ color: 'orange' }}>Default</span>;
+                                  case 1:
+                                    return <span style={{ color: 'red' }}>Warning</span>;
+                                  case 2:
+                                    return <span style={{ color: 'yellow' }}>inactive</span>;
+                                  default:
+                                    return null; // Handle unknown status values if necessary
+                                }
+                              })()}</td>
                                 <td>{request.year}</td>
                              
                                 <td>
@@ -335,8 +364,30 @@ function AnnualReconciliationPending() {
                                     onChange={(e) => handleFieldUpdate('remarks', request.client_id, e.target.value)}
                                   />
                                 </td>
-                                <td>{request.completed_status}</td>
-                                <td>{request.trigger_terminationstatus}</td>
+                                <td> {(() => {
+                                switch (request.completed_status) {
+                                  case 0:
+                                    return <span style={{ color: 'orange' }}>Default</span>;
+                                  case 1:
+                                    return <span style={{ color: 'green' }}>Completed</span>;
+                                  case 2:
+                                    return <span style={{ color: 'red' }}>InComplete</span>;
+                                  default:
+                                    return null; // Handle unknown status values if necessary
+                                }
+                              })()}</td>
+                                 <td> {(() => {
+                                switch (request.trigger_terminationstatus) {
+                                  case 0:
+                                    return <span style={{ color: 'orange' }}>Default</span>;
+                                  case 1:
+                                    return <span style={{ color: 'green' }}>Completed</span>;
+                                  case 2:
+                                    return <span style={{ color: 'red' }}>Terminated</span>;
+                                  default:
+                                    return null; // Handle unknown status values if necessary
+                                }
+                              })()}</td>
                                
                                 <td>{request.user_name}</td>
                               </tr>

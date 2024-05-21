@@ -6,6 +6,7 @@ import '../../Component/MessageBox/MessageBox.css';
 import URL from "../../URL";
 function ClientCategory() {
     const [client, setClient] = useState('');
+    const [clients, setClients] = useState([]);
     const [id, setId] = useState('');
     const [client_name, setname] = useState('');
     const [email, setemail] = useState('');
@@ -435,7 +436,7 @@ const handleCancelDelete = () => {
              {/* <td>{index + 1}</td> */}
              <td>{user.client_id}</td>
               <td>{user.client_name}</td>
-              <td>{user.category_id}</td>
+              <td>{user.category_name}</td>
               <td>{user.email}</td>
               <td>{user.phone}</td>
               <td>{user.status}</td>
@@ -574,22 +575,42 @@ const handleCancelDelete = () => {
                           />
                         </div>
                       </div>
-                      <div className="col-md-6 mb-3">
-                        <label className="title">Category ID</label>
+                      {/* <div className="col-md-6 mb-3">
+                        <label className="title"> Category Name</label>
                         <div>
-                          <input
-                            type="numeric"
-                            autoComplete="off"
-                            className="form-control"
-                            name="catid"
-                            id="txtCayegoryIDEdit"
-                            placeholder="Enter Category ID"
-                            onChange={(e) => setClientDetails({ ...clientDetails,category_id: e.target.value })}
-                            value={clientDetails.category_id} 
-                            required
-                          />
+                        <select
+                                        value={client}
+                                        onChange={(e) => setClient(e.target.value)}
+                                        style={{ width: '120%' }}
+                                      
+                                        className="form-select">
+                                        <option value="">Select Category Name</option> 
+                                        {categories.map(category => (
+                                                <option key={category.category_id} value={category.category_id}>
+                                                    {category.category_name}
+                                                </option>
+                                            ))}
+                                    </select>
+                                              <div className="dropdown-arrow"></div>
                         </div>
-                      </div>
+                      </div> */}
+                      <div className="col-12 col-md-3 mb-3">
+                  <label className="title"   >Category Name<span className="text-danger">*</span></label>
+                  <select
+                    id="categorySelect"
+                    className="form-select"
+                    value={clientDetails.category_id}
+                    onChange={(e) => setClientDetails({ ...clientDetails, category_id: e.target.value })}
+                 
+                  >
+                    <option value="">Select Category Name</option>
+                    {categories.map(category=> (
+                      <option key={category.category_id} value={category.category_id}>
+                        {category.category_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                       <div className="col-md-6 mb-3">
                         <label className="title">status</label>
                         <div>

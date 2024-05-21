@@ -52,7 +52,7 @@ function LicenseRequestPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [rejectRemarks, setRejectRemarks] = useState('');
   const [showRejectPopup, setShowRejectPopup] = useState(false);
-  
+  const URLAPIGenerateFile = URL + "api/Licenserequest/GenerateFile";
   
   const toggleModuleModal = () => {
     setShowModuleModal(!showModuleModal);
@@ -64,6 +64,31 @@ function LicenseRequestPage() {
 useEffect(() => {
   fetchclients();
 }, []);
+
+const GenerateFile = async () => {
+  try {
+    const selectedIds = selectedRequest.map(request => request.recid);
+    if (selectedIds.length === 0) {
+      alert("Please select at least one record.");
+      return;
+    }
+
+    const response = await axios.post(URLAPIGenerateFile, {
+      recIds: selectedIds 
+    });
+  
+    if (response.data.Success) {
+      handleReject();
+      fetchLicenseRequestList(); 
+      setSelectedRequest([]); 
+      setSelectAll(false); 
+    } else {
+      console.error('Failed to mark records as Reject.');
+    }
+  } catch (error) {
+    console.error('Error marking records as Reject:', error);
+  }
+};
 
 const handleSearch = (event) => {
   event.preventDefault();
@@ -620,9 +645,12 @@ const handleReject = async () => {
                 <button onClick={markPendingRenewal} className="btn btn-outline-danger"  style={{ marginRight: '10px' }}>
                  Mark Renewal Status As Pending
                 </button>
-                <button onClick={handleModule} className="btn btn-outline-success">
+                <button onClick={handleModule} className="btn btn-outline-success"  style={{ marginRight: '10px' }}>
                   Get Modules
                 </button> 
+                <button onClick={GenerateFile} className="btn btn-outline-success" style={{ marginRight: '10px' }} >
+                  Generate files
+                </button>
                 <PopUp
         showModal={showModuleModal}
         toggleModal={toggleModuleModal}
