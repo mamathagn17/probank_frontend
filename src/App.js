@@ -31,11 +31,12 @@ import AnnualReconciliationLogs from './pages/AnnualReconciliationLogs/AnnualRec
 import HolderCreationLogs from './pages/HolderCreationLogs/HolderCreationLogs';
 import UserAddLogs from './pages/UserAddLogs/UserAddLogs';
 import Permission from './pages/Permission/Permission';
-
+import Layout from './Component/Layout';
 function App() {
   return (
     <BrowserRouter>
-      <div><DashBoard/></div>
+      {/* <div><DashBoard/></div> */}
+      <Layout>
       <Routes>
         <Route path="/" element={<Login/>} />
         <Route eaxct path='/FirstLogin' element={<FirstLogin/>}/>
@@ -66,12 +67,15 @@ function App() {
         <Route exact path="/HolderCreationLogs" element={<HolderCreationLogs/>}/>
         <Route exact path="/UserAddLogs" element={<UserAddLogs/>}/>
         <Route exact path="/Permission" element={<Permission/>}/>
+        {/* <Route exact path="/DashBoard" element={<DashBoard/>}/> */}
+     
      
       
       
       
 
       </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }

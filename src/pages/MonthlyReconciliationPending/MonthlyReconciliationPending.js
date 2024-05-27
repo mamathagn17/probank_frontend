@@ -177,11 +177,13 @@ function MonthlyReconciliationPending() {
     }
   };
 
-  const handleFieldUpdate = async (fieldName, requestId, updatedValue) => {
+  const handleFieldUpdate = async ( requestId,month,year,fieldName, updatedValue) => {
     try {
       // Make the API call to update the field
       const response = await axios.post(URLToUpdateField, {
         requestId: requestId,
+        month:month,
+        year:year,
         fieldName: fieldName,
         updatedValue: updatedValue
       });

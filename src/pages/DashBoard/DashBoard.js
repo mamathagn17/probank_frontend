@@ -84,39 +84,35 @@ import './DashBoard.css';
 // Define sample data
 
 const Dashboard = () => {
-
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [routes, setRoutes] = useState([]);
-
-
   const location = useLocation();
-
-  
-   const hiddenRoutes = ["/Login","/FirstLogin"]; // Add more routes as needed
-
-  
- const hideNavbar = hiddenRoutes.includes(location.pathname);
+  const hiddenRoutes = ['/Login', '/FirstLogin'];
+  const hideNavbar = hiddenRoutes.includes(location.pathname);
   const isInitialRoute = location.pathname === '/';
-
-  
   useEffect(() => {
-    fetchDynamicRoutes();
+    const storedRoutes = JSON.parse(localStorage.getItem('routes'));
+    console.log(storedRoutes);
+    if (storedRoutes) {
+      setRoutes(storedRoutes);
+    } else {
+      fetchDynamicRoutes();
+    }
   }, []);
 
   const fetchDynamicRoutes = async () => {
     try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const response = await axios.post(URL + 'api/permission/dynamicRoutes', { userInfo });
       if (response.data.isValid) {
         setRoutes(response.data.routes);
+        localStorage.setItem('routes', JSON.stringify(response.data.routes)); // Store routes in local storage
       } else {
         console.error(response.data.responseText);
       }
     } catch (error) {
-      console.error("Error fetching dynamic routes:", error);
+      console.error('Error fetching dynamic routes:', error);
     }
   };
-
-
 const sampleData = [
   {
     icon: <FaUser />,
@@ -203,6 +199,10 @@ const sampleData = [
         title: "User Creation Logs",
         link: "/UserAddLogs",
       },
+      {
+        title: "User Creation Logs",
+        link: "/Permission",
+      },
     ],
   },
   {
@@ -215,35 +215,65 @@ const sampleData = [
   },
 ];
 
-return !hideNavbar &&  !isInitialRoute &&  (
+// return !hideNavbar &&  !isInitialRoute &&  (
+//   <Navbar expand="lg" variant="dark" bg="primary" className="custom-navbar">
+//     <Container>
+//       <Navbar.Brand className="brand">License Portal</Navbar.Brand>
+//       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+//       <Navbar.Collapse id="responsive-navbar-nav">
+//         <Nav className="ml-auto">
+//           {sampleData.map((item, index) => (
+//             <NavDropdown
+//               key={index}
+//               title={
+//                 <span>
+//                   {item.icon} {item.title}
+//                 </span>
+//               }
+//               id={`${item.title.toLowerCase()}-dropdown`}
+//             >
+//               {item.children &&
+//                 item.children.map((child, idx) => (
+//                   <NavDropdown.Item key={idx} href={child.link}>
+//                     {child.title}
+//                   </NavDropdown.Item>
+//                 ))}
+//             </NavDropdown>
+//           ))}
+//         </Nav>
+//       </Navbar.Collapse>
+//     </Container>
+//   </Navbar>
+// );
+// };
+return !hideNavbar && !isInitialRoute && (
   <Navbar expand="lg" variant="dark" bg="primary" className="custom-navbar">
     <Container>
       <Navbar.Brand className="brand">License Portal</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="ml-auto">
-          {sampleData.map((item, index) => (
+          {routes.map((routeGroup, index) => (
             <NavDropdown
               key={index}
-              title={
-                <span>
-                  {item.icon} {item.title}
-                </span>
-              }
-              id={`${item.title.toLowerCase()}-dropdown`}
+              title={<span>{routeGroup.icon} {routeGroup.title}</span>}
+              id={`${routeGroup.title.toLowerCase()}-dropdown`}
             >
-              {item.children &&
-                item.children.map((child, idx) => (
-                  <NavDropdown.Item key={idx} href={child.link}>
-                    {child.title}
-                  </NavDropdown.Item>
-                ))}
+              {routeGroup.children && routeGroup.children.map((child, idx) => (
+                <NavDropdown.Item key={idx} href={child.link}>
+                  {child.title}
+                </NavDropdown.Item>
+              ))}
             </NavDropdown>
           ))}
+          <NavDropdown title={<span><FaUser /> My Profile</span>} id="license-profile-dropdown">
+            <NavDropdown.Item href="/Login">Logout</NavDropdown.Item>
+          </NavDropdown>
         </Nav>
       </Navbar.Collapse>
     </Container>
   </Navbar>
 );
 };
+
 export default Dashboard;

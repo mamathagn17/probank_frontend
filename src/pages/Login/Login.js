@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import MessageBox from '../../Component/MessageBox/MessageBox';
 import { Button } from 'react-bootstrap';
+import Dashboard from '../DashBoard/DashBoard';
 import URL from "../../URL";
 
 function Login() {
@@ -36,21 +37,26 @@ function Login() {
         setMessage('Login successful');
         setMessageType('success');
         
-        const { user_id, user_name } = response.data; 
+        const { user_id, user_name } = response.data;
 
         if (password === "12345678") {
-        
           navigate(`/FirstLogin?user_id=${user_id}`);
         } else {
-          navigate('/VendorCreation')
-         
-console.log('userInfo before navigating:', { user_id, user_name });
-localStorage.setItem('userInfo', JSON.stringify({ user_id, user_name }));
-//  navigate('/LicenseRequestPage', { state: { userInfo: { user_id, user_name } } });
-
-
-          setMessage('Welcome to home');
-          setShowMessage(true);
+          const routesResponse = await axios.post(URL + 'api/permission/dynamicRoutes', { userInfo: { user_id, user_name } });
+          if (routesResponse.data.isValid) {
+            localStorage.setItem('userInfo', JSON.stringify({ user_id, user_name }));
+            localStorage.setItem('routes', JSON.stringify(routesResponse.data.routes));
+            console.log('Stored routes:', routesResponse.data.routes); // Debug log
+            setMessage('Welcome to home');
+            setShowMessage(true);
+            navigate('/VendorCreation')
+            // navigate('/DashBoard');
+          } else {
+            console.error(routesResponse.data.responseText);
+            setIsError(true);
+            setMessageType('error');
+            setMessage('Error fetching routes. Please try again.');
+          }
         }
       } else {
         setShowMessage(true);
@@ -105,7 +111,7 @@ localStorage.setItem('userInfo', JSON.stringify({ user_id, user_name }));
                 <Button variant="success" type="submit">Login</Button>
               </div>
               <div className="text-center mt-2">
-                <Link to="/forgotpassword">Forgot Password?</Link> {/* Link to the Forgot Password page */}
+                <Link to="/forgotpassword">Forgot Password?</Link>
               </div>
             </div>
           </form>

@@ -130,25 +130,38 @@ function MonthlyReconciliation() {
   
     // Call the API to update the "amount" field in the database
     try {
-      await handleFieldUpdate('amount', updatedRequestList[index].client_id, value);
+      await handleFieldUpdate(
+        updatedRequestList[index].client_id,
+        updatedRequestList[index].month,
+        updatedRequestList[index].year,
+        'amount',
+        value
+      );
     } catch (error) {
       console.error('Error updating amount:', error);
       // Handle error if needed
     }
   };
+  
   const handleRemarksChange = async (index, value) => {
     const updatedRequestList = [...requestList];
     updatedRequestList[index].remarks = value;
     setRequestList(updatedRequestList);
   
     try {
-      await handleFieldUpdate('remarks', updatedRequestList[index].client_id, value);
+      await handleFieldUpdate(
+        updatedRequestList[index].client_id,
+        updatedRequestList[index].month,
+        updatedRequestList[index].year,
+        'remarks',
+        value
+      );
     } catch (error) {
       console.error('Error updating remarks:', error);
       // Handle error if needed
     }
   };
-
+  
   const handleMarkPendingLogs = async () => {
    
     const selectedIds = selectedRequest.map(request => request.client_id);
@@ -269,11 +282,13 @@ function MonthlyReconciliation() {
     }
   };
 
-  const handleFieldUpdate = async (fieldName, requestId, updatedValue) => {
+  const handleFieldUpdate = async ( requestId,month,year,fieldName, updatedValue) => {
     try {
       // Make the API call to update the field
       const response = await axios.post(URLToUpdateField, {
         requestId: requestId,
+        month:month,
+        year:year,
         fieldName: fieldName,
         updatedValue: updatedValue
       });

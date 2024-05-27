@@ -103,32 +103,47 @@ function AnnualReconciliation() {
   };
 
   const handleAmountChange = async (index, value) => {
-    const updatedRequestList = [...requestList];
-    updatedRequestList[index].amount = value;
-    setRequestList(updatedRequestList);
+    const updatedRequestList = requestList.map((request, idx) => {
+      if (idx === index) {
+        return { ...request, amount: value }; // Update the amount for the specific row
+      }
+      return request;
+    });
+    setRequestList([...updatedRequestList]); // Update the state with the new array
   
-  
-   
+    // Call the API to update the "amount" field in the database
     try {
-      await handleFieldUpdate('amount', updatedRequestList[index].client_id, value);
+      await handleFieldUpdate(
+        updatedRequestList[index].client_id,
+      
+        updatedRequestList[index].year,
+        'amount',
+        value
+      );
     } catch (error) {
       console.error('Error updating amount:', error);
-     
+      // Handle error if needed
     }
   };
+  
   const handleRemarksChange = async (index, value) => {
     const updatedRequestList = [...requestList];
     updatedRequestList[index].remarks = value;
     setRequestList(updatedRequestList);
   
-   
     try {
-      await handleFieldUpdate('remarks', updatedRequestList[index].client_id, value);
+      await handleFieldUpdate(
+        updatedRequestList[index].client_id,
+        updatedRequestList[index].year,
+        'remarks',
+        value
+      );
     } catch (error) {
       console.error('Error updating remarks:', error);
-      
+      // Handle error if needed
     }
   };
+  
 
   const handleSelectAllToggle = () => {
     if (selectAll) {
@@ -194,15 +209,17 @@ function AnnualReconciliation() {
     }
   };
 
-  const handleFieldUpdate = async (fieldName, requestId, updatedValue) => {
+  const handleFieldUpdate = async ( requestId,year,fieldName, updatedValue) => {
     try {
-      
+      // Make the API call to update the field
       const response = await axios.post(URLToUpdateField, {
         requestId: requestId,
+        year:year,
         fieldName: fieldName,
         updatedValue: updatedValue
       });
 
+   
    
       if (response.data.Success) {
        
