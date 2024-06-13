@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import URL from "../../URL";
 import { useLocation } from 'react-router-dom';
-
+import MessageBox from '../../Component/MessageBox/MessageBox';
 import '../../Component/MessageBox/MessageBox.css';
 
 function MonthlyReconciliationPending() {
@@ -22,6 +22,9 @@ function MonthlyReconciliationPending() {
   const [clients, setClients] = useState([]);
   const [year, setYear] = useState('');
   const perPage = 10;
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const URLAPIPendinglist = URL + "api/monthlyreconciliation/GetPendingList";
   const URLToUpdateField = URL + "api/monthlyreconciliation/UpdateField";
@@ -38,7 +41,16 @@ function MonthlyReconciliationPending() {
   const handleClientChange = (event) => {
     setClient(event.target.value);
   };
+  const handleCancelDelete = () => {
+    setShowConfirmation(false); // Hide confirmation message box
+  };
   const markRecordsAsCompleted = async () => {
+    setShowConfirmation(true);
+    
+  };
+
+  const handleConfirmCompleted= async () => {
+    setShowConfirmation(false); // Hide confirmation message box
     try {
       const selectedIds = selectedRequest.map(request => request.client_id);
       if (selectedIds.length === 0) {
@@ -225,6 +237,8 @@ function MonthlyReconciliationPending() {
     fetchMonthlyPendingList();
   }, [currentPage, month,branch,client,year]); // Dependencies array without editable
 
+  
+
     return (
       <div className="container" data-aos="fade-up">
         <div className="row">
@@ -235,6 +249,11 @@ function MonthlyReconciliationPending() {
                   <div className="col-12 col-md-6">
                     <h4>Monthly Reconciliation-PendingList</h4>
                   </div>
+                  {/* <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div> */}
                 </div>
               </div>
               <form>
@@ -451,6 +470,15 @@ function MonthlyReconciliationPending() {
               <span>{currentPage}</span>
               <button onClick={nextPage} disabled={requestList.length < perPage} className="btn btn-primary">Next</button>
             </div>
+            {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to Mark it as Completed?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmCompleted}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
           </div>

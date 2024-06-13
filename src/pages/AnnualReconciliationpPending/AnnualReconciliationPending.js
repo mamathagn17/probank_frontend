@@ -3,7 +3,7 @@ import axios from 'axios';
 import URL from "../../URL";
 import { useLocation } from 'react-router-dom';
 import '../../Component/MessageBox/MessageBox.css';
-
+import MessageBox from '../../Component/MessageBox/MessageBox';
 function AnnualReconciliationPending() {
   const location = useLocation();
   const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
@@ -20,7 +20,10 @@ function AnnualReconciliationPending() {
   const [clients, setClients] = useState([]);
   const [year, setYear] = useState('');
   const perPage = 10;
-
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const URLAPIPendinglist = URL + "api/annualreconciliation/GetPendingList";
   const URLToUpdateField = URL + "api/annualreconciliation/UpdateField";
   const URLAPIfetchbranch = URL + "api/Licenserequest/fetchbranches";
@@ -28,8 +31,16 @@ function AnnualReconciliationPending() {
   const URLAPIMarkAsCompleted = URL + "api/annualreconciliation/MarkAsCompleted";
   const URLAPIStatusAction=URL + "api/annualreconciliation/LogAnnualAction";
   
-
+  const handleCancelDelete = () => {
+    setShowConfirmation(false); // Hide confirmation message box
+  };
   const markRecordsAsCompleted = async () => {
+    setShowConfirmation(true);
+   
+  };
+
+  const handleConfirmCompleted= async () => {
+    setShowConfirmation(false); // Hide confirmation message box
     try {
       const selectedIds = selectedRequest.map(request => request.client_id);
       if (selectedIds.length === 0) {
@@ -208,6 +219,7 @@ function AnnualReconciliationPending() {
     fetchAnnualPendingList();
   }, [currentPage,branch,client,year]); 
 
+ 
     return (
       <div className="container" data-aos="fade-up">
         <div className="row">
@@ -218,6 +230,11 @@ function AnnualReconciliationPending() {
                   <div className="col-12 col-md-6">
                     <h4>Annual Reconciliation-PendingList</h4>
                   </div>
+                  {/* <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div> */}
                 </div>
               </div>
               <form>
@@ -418,6 +435,15 @@ function AnnualReconciliationPending() {
 </button>
 
           </div>
+          {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to Mark it as Completed?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmCompleted}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
           </div>

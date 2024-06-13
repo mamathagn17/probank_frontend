@@ -29,6 +29,11 @@ function ClientBranchConfiguration() {
     setMessage('');
     setMessageType('');
     setShowMessage(false);
+    setbranchname('');
+    setbranchcode('');
+    setClient('');
+
+    
   };
 
   useEffect(() => {

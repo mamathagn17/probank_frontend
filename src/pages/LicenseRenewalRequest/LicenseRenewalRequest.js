@@ -4,6 +4,7 @@ import URL from "../../URL";
 import PopUp from '../../Component/PopUp/PopUp';
 import '../../Component/MessageBox/MessageBox.css';
 import '../../Component/PopUp/PopUp';
+import MessageBox from '../../Component/MessageBox/MessageBox';
 function LicenseRenewalPage() {
   const [category, setCategory] = useState('');
   const [client, setClient] = useState('');
@@ -27,12 +28,11 @@ function LicenseRenewalPage() {
   const [branches, setBranches] = useState([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  
-
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [showMessage, setShowMessage] = useState(false);
-  const [filteredRequestList, setFilteredRequestList] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const URLAPIlicenselist = URL + "api/Licenserequest/GetLicenseRenewalList";
   const URLAPIfetchbranch = URL + "api/Licenserequest/fetchbranches";
@@ -66,6 +66,15 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString(); // Returns date in the local time zone format
 };
+
+const clearMessage = () => {
+  setMessage('');
+  setMessageType('');
+  setShowMessage(false);
+};
+const handleCancelDelete = () => {
+  setShowConfirmation(false); // Hide confirmation message box
+};
 // const handleSearch = () => {
 //   setCurrentPage(1); // Reset currentPage when initiating a new search
 //   fetchLicenseRequestList(); // Fetch license request list with updated search query
@@ -88,6 +97,12 @@ const formatDate = (dateString) => {
 //   }
 // };
 const markRecordsAsApprove = async () => {
+  setShowConfirmation(true);
+ 
+};
+
+const handleConfirmApprove= async () => {
+  setShowConfirmation(false); // Hide confirmation message box
   try {
     const selectedIds = selectedRenewal.map(request => request.recid);
     if (selectedIds.length === 0) {
@@ -273,6 +288,8 @@ const fetchclients = async () => {
         console.error('Error:', error);
       }
     };
+   
+    
   return (
     <div className="container" data-aos="fade-up">
       <div className="row">
@@ -283,6 +300,11 @@ const fetchclients = async () => {
                 <div className="col-12 col-md-6">
                   <h4> License Renewal </h4>
                 </div>
+                {/* <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div> */}
               </div>
             </div>
             <form>
@@ -618,6 +640,15 @@ const fetchclients = async () => {
         toggleModal={toggleModuleModal}
         modules={modules} 
          />
+          {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to mark its as Approved?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmApprove}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
             {isError && <p>{content}</p>}

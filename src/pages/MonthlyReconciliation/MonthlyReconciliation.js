@@ -312,6 +312,32 @@ function MonthlyReconciliation() {
     fetchMonthlyReconciliation();
   }, [currentPage, month,branch,client,year]); // Dependencies array without editable
 
+  const handleRequestError = (errorMessage) => {
+    console.error(errorMessage);
+    setMessage(errorMessage);
+    setMessageType('error');
+    setShowMessage(true);
+  };
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(URL + 'api/monthlyreconciliation/downloadMonthlyRecon', {
+        responseType: 'blob', 
+      });
+
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'MonthlyRecon_logs.csv');
+      document.body.appendChild(link);
+      link.click();
+
+  
+      document.body.removeChild(link);
+    } catch (error) {
+      handleRequestError('Error occurred while downloading Monthly Reconciliation.');
+    }
+  };
     return (
       <div className="container" data-aos="fade-up">
         <div className="row">
@@ -322,6 +348,11 @@ function MonthlyReconciliation() {
                 <div className="col-12 col-md-6">
                   <h4>Monthly Reconciliation</h4>
                 </div>
+                <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div>
               </div>
             </div>
             <form>

@@ -63,6 +63,39 @@ function LicenseMaster() {
     };
 
     const handleSubmit = async () => {
+
+        
+      if (!licenseName) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please Enter a License name.');
+        return;
+      }
+
+      
+      if (!licenseCost) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please Enter License Cost.');
+        return;
+      }
+
+      
+      if (!licenseDescription) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please Enter Discription.');
+        return;
+      }
+
+      
+      if (!client) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please Select product.');
+        return;
+      }
+      
         try {
             const response = await axios.post( URLaddlicensetype , {
                 license_name: licenseName,
@@ -76,6 +109,7 @@ function LicenseMaster() {
                 setMessage('License type added successfully.');
                 setMessageType('success');
                 clearForm();
+                
             } else {
                 setShowMessage(true);
                 setIsError(true);
@@ -99,6 +133,10 @@ function LicenseMaster() {
         setMessage('');
         setMessageType('');
         setShowMessage(false);
+        // setLicenseName('');
+       
+        // setLicenseDescription('');
+        // setLicenseCost('');
     };
 
     return (
@@ -124,6 +162,7 @@ function LicenseMaster() {
                                             className="form-control"
                                             id="txtLicenseName"
                                             value={licenseName}
+                                            placeholder='Enter License Name'
                                             onChange={(e) => setLicenseName(e.target.value)}
                                             required
                                         />
@@ -150,6 +189,7 @@ function LicenseMaster() {
                                             autoComplete="off"
                                             className="form-control"
                                             id="txtLicenseDescription"
+                                            placeholder='Enter License Discription'
                                             value={licenseDescription}
                                             onChange={(e) => setLicenseDescription(e.target.value)}
                                             required
@@ -162,6 +202,7 @@ function LicenseMaster() {
                                             autoComplete="off"
                                             className="form-control"
                                             id="txtLicenseCost"
+                                            placeholder='Enter License Cost'
                                             value={licenseCost}
                                             onChange={(e) => setLicenseCost(e.target.value)}
                                             required

@@ -5,7 +5,7 @@ import '../../Component/MessageBox/MessageBox.css';
 import URL from "../../URL";
 function MessageCreation() {
   const [message_name, setMsg] = useState("");
-  const [message_type, setMessageType] = useState('warning'); // Default message type
+  const [message_type, setMessageType] = useState(''); // Default message type
   const [isError, setIsError] = useState(false);
   const [content, setContent] = useState('');
   const [message, setMessage] = useState('');
@@ -86,6 +86,8 @@ function MessageCreation() {
       if (response.data.Valid) {
         setShowMessage(true);
         setMessage('Message saved successfully');
+        setMessageType('');
+        setMsg('');
         fetchmsgList();
       } else {
         setShowMessage(true);
@@ -120,6 +122,7 @@ function MessageCreation() {
                     onChange={(e) => setMsg(e.target.value)}
                     type="text"
                     autoComplete="off"
+                    value={message_name}
                     className="form-control"
                     id="txtmsg"
                     style={{ width: '100%' }} // Set width to 100%
@@ -136,10 +139,11 @@ function MessageCreation() {
                     onChange={(e) => setMessageType(e.target.value)}
                     className="form-select"
                     id="selectMessageType"
+                   
                     style={{ width: '100%' }} // Set width to 100%
                     required
                   >
-                    
+                     <option value="">Select Message Type</option>
                     <option value="warning">Warning</option>
                     <option value="terminate">terminate</option>
                   </select>

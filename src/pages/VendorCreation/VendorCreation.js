@@ -29,6 +29,7 @@ function VendorCreation() {
   const URLgetuser = URL + "api/vendor/GetUserlist";
   const URLupdate = URL + "api/vendor/updateUser";
   const URLvendordetails = URL+"api/vendor/Vendor_Details";
+  const URLDelete=URL+"api/vendor/DeleteUser";
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [categoryList, setCategoryList] = useState([]);
   // const [content, setContent] = useState('');
@@ -39,12 +40,10 @@ function VendorCreation() {
   fetchUserList();
 }, [currentPage]); 
 
-const handleAddNew = () => {
-  navigate('/AddUser'); 
+const handleAddVendor = () => {
+  navigate('/AddVendor'); 
 };
-const handleCancel = () => {
-  navigate('/VendorCreation'); 
-};
+
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -288,9 +287,9 @@ const handleCancelDelete = () => {
 };
 
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (license_holderid) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/vendor/DeleteUser', { id });
+      const response = await axios.post(URLDelete, {license_holderid});
       setMessage(response.data.message);
       if (response.data.Valid) {
         console.log('User deleted successfully');
@@ -308,7 +307,32 @@ const handleCancelDelete = () => {
       console.error('Error deleting user:', error);
     }
   };
+  const handleRequestError = (errorMessage) => {
+    console.error(errorMessage);
+    setMessage(errorMessage);
+    setMessageType('error');
+    setShowMessage(true);
+  };
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(URL + 'api/vendor/downloadvendordetails', {
+        responseType: 'blob', 
+      });
+
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'vendordetails_logs.csv');
+      document.body.appendChild(link);
+      link.click();
+
   
+      document.body.removeChild(link);
+    } catch (error) {
+      handleRequestError('Error occurred while downloading vendor Details.');
+    }
+  };
   
   return (
     <div className="container" data-aos="fade-up">
@@ -322,9 +346,16 @@ const handleCancelDelete = () => {
                   <h4>Vendor List</h4>
                 </div>
                 <div className="col-md-6 text-end">
+                <button onClick={handleAddVendor} className="btn btn-outline-success" style={{ marginRight: '10px' }}>
+                  Add Vendor
+                  </button> 
+                  <button onClick={handleDownload} className="btn btn-outline-success" style={{ marginRight: '10px' }}>
+                 Download
+                  </button> 
                   <button  className="btn btn-outline-success" style={{ marginRight: '10px' }}>
                     Upload Excel
                   </button> 
+
                   <button onClick={handleDeleteUsers} className="btn btn-outline-danger">
   Delete Selected
 </button>
@@ -617,13 +648,11 @@ const handleCancelDelete = () => {
                 <div className="row">
   <div className="col">
     <div className="d-flex justify-content-between">
-      <button onClick={handleUpdate} className="btn btn-outline-success">
+      <button onClick={handleUpdate} className="btn btn-outline-success" style={{ marginRight: '10px' }} >
         Update
       </button>
-      <button onClick={handleCancel} className="btn btn-outline-success">
-        Cancel
-      </button>
-      <button onClick={() => handleDelete(userDetails.id)} className="btn btn-outline-success">
+      
+      <button onClick={() => handleDelete(userDetails.license_holderid)} className="btn btn-outline-danger">
       Delete
     </button>
     </div>

@@ -49,6 +49,35 @@ function AddVendor() {
   async function handleSubmit(e) {
     e.preventDefault();
     setIsError(false);
+    
+    if (!name) {
+      setShowMessage(true);
+      setIsError(true);
+      setMessage('Please enter a Vendor name.');
+      return;
+    }
+    
+    if (!email) {
+      setShowMessage(true);
+      setIsError(true);
+      setMessage('Please Enter Email ID.');
+      return;
+    }
+    
+    if (!user_name) {
+      setShowMessage(true);
+      setIsError(true);
+      setMessage('Please Enter User Name.');
+      return;
+    }
+
+    
+    if (!password) {
+      setShowMessage(true);
+      setIsError(true);
+      setMessage('Please Enter Password.');
+      return;
+    }
     const isEmailValid = validateEmail(email);
     if (!isEmailValid) {
       setShowMessage(true);
@@ -81,10 +110,14 @@ function AddVendor() {
         setLicenseHolderId(response.data.license_holderid);
         saveHolderCreationLog(response.data.license_holderid);
       
-       
-       
+
     
       setMessageType('success');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setUserName('');
+      setPhone('');
       //setContent('Vendor Details Saved Successfully..');
       //navigate('/');
     } else {
@@ -155,7 +188,7 @@ function AddVendor() {
                               autoComplete="off"
                               className="form-control"
                               name="name"
-                              required
+                             value={name}
                               id="txtVendorName"
                               placeholder="Enter VendorName"
                             />
@@ -168,7 +201,7 @@ function AddVendor() {
                               autoComplete="off"
                               className="form-control"
                               name="email"
-                              required
+                             value={email}
                               id="txtEmail"
                               placeholder="Enter Email ID"
                             />
@@ -180,8 +213,9 @@ function AddVendor() {
                               type="tel"
                               autoComplete="off"
                               className="form-control"
+                              value={phone}
                               name="phone"
-                              required
+                             
                               id="txtPhone"
                               placeholder="Enter Phone Number"
                             />
@@ -193,8 +227,9 @@ function AddVendor() {
                               type="text"
                               autoComplete="off"
                               className="form-control"
+                              value={user_name}
                               name="username"
-                              required
+                            
                               id="txtUserName"
                               placeholder="Enter User Name"
                             />
@@ -206,8 +241,9 @@ function AddVendor() {
                               type="password"
                               autoComplete="off"
                               className="form-control"
+                              value={password}
                               name="password"
-                              required
+                            
                               id="txtPassword"
                               placeholder="Enter Password"
                             />

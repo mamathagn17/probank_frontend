@@ -29,6 +29,7 @@ function ClientCategoryConfiguration() {
     setMessageType('');
     setShowMessage(false);
     setCategory('');
+    setCategory('');
   };
   
   useEffect(() => {
@@ -112,7 +113,7 @@ function ClientCategoryConfiguration() {
                 <div className="card-header">
                     <div className="row">
                     <div className="col-6">
-              <h6>Category Configuration</h6>
+             
             </div>
             
           
@@ -126,6 +127,7 @@ function ClientCategoryConfiguration() {
                               onChange={(e) => setCategory(e.target.value)}
                               type="text"
                               autoComplete="off"
+                              value={category_name}
                               className="form-control"
                               name="category_name"
                               required

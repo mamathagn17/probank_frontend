@@ -43,6 +43,12 @@ function ClientCategory() {
     setMessage('');
     setMessageType('');
     setShowMessage(false);
+    // setname('');
+    //   setClient('');
+    //   setemail('');
+    //   setphone('');
+    //   setStatus('');
+    //   setClientCode('');
   };
 
 
@@ -53,7 +59,7 @@ function ClientCategory() {
   }, [currentPage]); 
 
   const handleCancel = () => {
-    navigate('/VendorCreation'); 
+    navigate('/ClientMaster'); 
   };
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -243,7 +249,26 @@ const handleCancelDelete = () => {
         }
     };
     async function handlesubmit() {
-        
+
+      if (!client_name) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please enter a Client name.');
+        return;
+      }
+      if (!client_code) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please Enter  Client Code.');
+        return;
+      }
+      if (!client) {
+        setShowMessage(true);
+        setIsError(true);
+        setMessage('Please select a Category.');
+        return;
+      }
+      
         const isemailValid = validateemail(email);
         if (!isemailValid) {
           setShowMessage(true);
@@ -278,7 +303,12 @@ const handleCancelDelete = () => {
           setMessage('client added Successfully..');
           setMessageType('success');
           setContent('client added Successfully..');
-          //navigate('/');
+          setname('');
+          setClient('');
+          setemail('');
+          setphone('');
+          setStatus('');
+          setClientCode('');
         } else {
           setShowMessage(true);
           setIsError(true);

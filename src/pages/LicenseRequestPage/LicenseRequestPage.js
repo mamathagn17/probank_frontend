@@ -5,6 +5,7 @@ import PopUp from '../../Component/PopUp/PopUp';
 import '../../Component/MessageBox/MessageBox.css';
 import '../../Component/PopUp/PopUp';
 import { useLocation } from 'react-router-dom';
+import MessageBox from '../../Component/MessageBox/MessageBox';
 
 
 function LicenseRequestPage() {
@@ -38,7 +39,9 @@ function LicenseRequestPage() {
   const [messageType, setMessageType] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [filteredRequestList, setFilteredRequestList] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [confirmationAction, setConfirmationAction] = useState('');
   const URLAPIlicenselist = URL + "api/Licenserequest/GetLicenseRequestList";
   const URLAPIfetchbranch = URL + "api/Licenserequest/fetchbranches";
   const URLAPIfetchclient = URL + "api/Licenserequest/fetchclients";
@@ -48,10 +51,12 @@ function LicenseRequestPage() {
   const URLAPIMarkpendingRenewal=URL + "api/Licenserequest/MarkAsPendingRenewal";
   const URLAPIRequestAction=URL + "api/Licenserequest/LogLicenseRequestAction";
   const URLToUpdateField = URL + "api/Licenserequest/UpdateField";
-  const [showModuleModal, setShowModuleModal] = useState(false); 
+  const [showModuleModal, setShowModuleModal] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState(''); 
   const [searchQuery, setSearchQuery] = useState('');
   const [rejectRemarks, setRejectRemarks] = useState('');
   const [showRejectPopup, setShowRejectPopup] = useState(false);
+  
   const URLAPIGenerateFile = URL + "api/Licenserequest/GenerateFile";
   
   const toggleModuleModal = () => {
@@ -60,11 +65,25 @@ function LicenseRequestPage() {
   useEffect(() => {
     fetchbranches();
 }, []);
-
+const clearMessage = () => {
+  setMessage('');
+  setMessageType('');
+  setShowMessage(false);
+};
 useEffect(() => {
   fetchclients();
 }, []);
+const handleCancelDelete = () => {
+  setShowConfirmation(false); // Hide confirmation message box
+};
 
+
+const handleRequestError = (errorMessage) => {
+  console.error(errorMessage);
+  setMessage(errorMessage);
+  setMessageType('error');
+  setShowMessage(true);
+};
 const GenerateFile = async () => {
   try {
     const selectedIds = selectedRequest.map(request => request.recid);
@@ -102,55 +121,96 @@ const formatDate = (dateString) => {
 };
 
 const markRecordsAsApprove = async () => {
-  try {
-    const selectedIds = selectedRequest.map(request => request.recid);
-    if (selectedIds.length === 0) {
-      alert("Please select at least one record.");
-      return;
-    }
+  setShowConfirmation(true);
+   setConfirmationMessage('Are you sure you want to Approve?');
+   setConfirmationAction('approve');
+  // try {
+  //   const selectedIds = selectedRequest.map(request => request.recid);
+  //   if (selectedIds.length === 0) {
+  //     alert("Please select at least one record.");
+  //     return;
+  //   }
 
-    const response = await axios.post(URLAPIMarkAsApprove, {
-      recIds: selectedIds 
-    });
+  //   const response = await axios.post(URLAPIMarkAsApprove, {
+  //     recIds: selectedIds 
+  //   });
 
-    if (response.data.Success) {
-      handleApprove();
-      console.log('approved');
-      fetchLicenseRequestList(); 
-      setSelectedRequest([]); 
-      setSelectAll(false); 
+  //   if (response.data.Success) {
+  //     handleApprove();
+  //     console.log('approved');
+  //     fetchLicenseRequestList(); 
+  //     setSelectedRequest([]); 
+  //     setSelectAll(false); 
 
-    } else {
-      console.error('Failed to mark records as Approved List.');
-    }
-  } catch (error) {
-    console.error('Error marking records as Approved List:', error);
-  }
+  //   } else {
+  //     console.error('Failed to mark records as Approved List.');
+  //   }
+  // } catch (error) {
+  //   console.error('Error marking records as Approved List:', error);
+  // }
 };
+
+
+// const handleConfirmApprove= async () => {
+//   setShowConfirmation(false); // Hide confirmation message box
+//   try {
+//     const selectedIds = selectedRequest.map(request => request.recid);
+//     if (selectedIds.length === 0) {
+//       alert("Please select at least one record.");
+//       return;
+//     }
+
+//     const response = await axios.post(URLAPIMarkAsApprove, {
+//       recIds: selectedIds 
+//     });
+
+//     if (response.data.Success) {
+//       handleApprove();
+//       console.log('approved');
+//       fetchLicenseRequestList(); 
+//       setSelectedRequest([]); 
+//       setSelectAll(false); 
+
+//     } else {
+//       console.error('Failed to mark records as Approved List.');
+//     }
+//   } catch (error) {
+//     console.error('Error marking records as Approved List:', error);
+//   }
+// };
 const markRecordsAsReject = async () => {
-  try {
-    const selectedIds = selectedRequest.map(request => request.recid);
-    if (selectedIds.length === 0) {
-      alert("Please select at least one record.");
-      return;
-    }
-
-    const response = await axios.post(URLAPIMarkAsReject, {
-      recIds: selectedIds 
-    });
-  
-    if (response.data.Success) {
-      handleReject();
-      fetchLicenseRequestList(); 
-      setSelectedRequest([]); 
-      setSelectAll(false); 
-    } else {
-      console.error('Failed to mark records as Reject.');
-    }
-  } catch (error) {
-    console.error('Error marking records as Reject:', error);
-  }
+  setShowConfirmation(true);
+  setConfirmationMessage('Are you sure you want to Reject?');
+  setConfirmationAction('reject');
 };
+
+
+// const handleConfirmreject= async () => {
+//   setShowConfirmation(false); // Hide confirmation message box
+  
+//   try {
+//     const selectedIds = selectedRequest.map(request => request.recid);
+//     if (selectedIds.length === 0) {
+//       alert("Please select at least one record.");
+//       return;
+//     }
+
+//     const response = await axios.post(URLAPIMarkAsReject, {
+//       recIds: selectedIds 
+//     });
+  
+//     if (response.data.Success) {
+//       handleReject();
+//       fetchLicenseRequestList(); 
+//       setSelectedRequest([]); 
+//       setSelectAll(false); 
+//     } else {
+//       console.error('Failed to mark records as Reject.');
+//     }
+//   } catch (error) {
+//     console.error('Error marking records as Reject:', error);
+//   }
+// };
 const markPendingRenewal = async () => {
   try {
     const selectedIds = selectedRequest.map(request => request.recid);
@@ -379,6 +439,71 @@ const handleReject = async () => {
         // Handle error if needed
       }
     };
+
+
+//     const handleConfirmation = () => {
+//       handleConfirmApprove();
+// handleConfirmreject();
+   // };
+    const handleConfirmAction = async () => {
+      setShowConfirmation(false); // Hide confirmation message box
+      const selectedIds = selectedRequest.map(request => request.recid);
+    
+      if (selectedIds.length === 0) {
+        alert("Please select at least one record.");
+        return;
+      }
+    
+      try {
+        let response;
+        if (confirmationAction === 'approve') {
+          response = await axios.post(URLAPIMarkAsApprove, {
+            recIds: selectedIds 
+          });
+        } else if (confirmationAction === 'reject') {
+          response = await axios.post(URLAPIMarkAsReject, {
+            recIds: selectedIds 
+          });
+        }
+    
+        if (response.data.Success) {
+          if (confirmationAction === 'approve') {
+            handleApprove();
+          } else if (confirmationAction === 'reject') {
+            handleReject();
+          }
+          fetchLicenseRequestList(); 
+          setSelectedRequest([]); 
+          setSelectAll(false); 
+        } else {
+          console.error(`Failed to mark records as ${confirmationAction}.`);
+        }
+      } catch (error) {
+        console.error(`Error marking records as ${confirmationAction}:`, error);
+      }
+    };
+
+    const handleDownload = async () => {
+      try {
+        const response = await axios.get(URL + 'api/Licenserequest/downloadLicenseRequest', {
+          responseType: 'blob', 
+        });
+  
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'LicenseRequest_logs.csv');
+        document.body.appendChild(link);
+        link.click();
+  
+    
+        document.body.removeChild(link);
+      } catch (error) {
+        handleRequestError('Error occurred while downloading LicenseRequest logs.');
+      }
+    };
+    
   return (
     <div className="container" data-aos="fade-up">
       <div className="row">
@@ -389,6 +514,11 @@ const handleReject = async () => {
                 <div className="col-12 col-md-6">
                   <h4>New License Request</h4>
                 </div>
+                <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div>
               </div>
             </div>
             <form>
@@ -556,6 +686,8 @@ const handleReject = async () => {
                             <th>Remarks</th>
                             <th>Product Name</th>
                             <th> Renewal Status</th>
+                            <th>Additional Module</th>
+                            <th> Upload Status</th>
                             
                           </tr>
                         </thead>
@@ -619,6 +751,8 @@ const handleReject = async () => {
         return null; 
     }
   })()}</td>
+   <td>{request.additionalModule}</td>
+   <td>{request.uploadt_status}</td>
     </tr>
   ))}
 
@@ -656,6 +790,22 @@ const handleReject = async () => {
         toggleModal={toggleModuleModal}
         modules={modules} 
          />
+           {showMessage && (
+        <MessageBox
+          message={message}
+          type={messageType}
+          onClose={clearMessage}
+        />
+      )}
+         {showConfirmation && (
+        <MessageBox
+          message={confirmationMessage}
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmAction}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
             {isError && <p>{content}</p>}

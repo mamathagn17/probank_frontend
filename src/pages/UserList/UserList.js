@@ -83,10 +83,10 @@ const togglePasswordVisibility = () => {
   };
 
   const handleCheckboxToggle = (user) => {
-    const isSelected = selectedUsers.some(selectedUser => selectedUser.id === user.id);
+    const isSelected = selectedUsers.some(selectedUser => selectedUser.user_id === user.user_id);
 
     if (isSelected) {
-      setSelectedUsers(selectedUsers.filter(selectedUser => selectedUser.id !== user.id));
+      setSelectedUsers(selectedUsers.filter(selectedUser => selectedUser.user_id !== user.user_id));
     } else {
       setSelectedUsers([...selectedUsers, user]);
     }
@@ -191,7 +191,27 @@ const togglePasswordVisibility = () => {
       console.error('Error:', error);
     }
   };
+  
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(URL + 'api/userlist/downloaduserlist', {
+        responseType: 'blob', 
+      });
 
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'userlist.csv');
+      document.body.appendChild(link);
+      link.click();
+
+  
+      document.body.removeChild(link);
+    } catch (error) {
+      handleRequestError('Error occurred while downloading Userlist.');
+    }
+  };
 
   return (
     <div className="container" data-aos="fade-up">
@@ -205,8 +225,11 @@ const togglePasswordVisibility = () => {
                   <h4>Update User Password</h4>
                 </div>
                 <div className="col-md-6 d-flex justify-content-end">
-                <button className="btn btn-outline-success ml-auto" onClick={handleAdduser}>
+                <button className="btn btn-outline-success ml-auto" onClick={handleAdduser} style={{ marginRight: '10px' }}>
                   Add User
+                </button>
+                <button className="btn btn-outline-success ml-auto" onClick={handleDownload} style={{ marginRight: '10px' }}>
+               Download
                 </button>
                 <button onClick={handleDeleteUsers} className="btn btn-outline-danger" >
                 Delete Selected

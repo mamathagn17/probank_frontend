@@ -33,6 +33,7 @@ function ProductCreation() {
     setMessage('');
     setMessageType('');
     setShowMessage(false);
+    setProduct('');
   };
   const nextPage = () => {
     setCurrentPage(currentPage + 1);
@@ -127,6 +128,7 @@ function ProductCreation() {
                               type="text"
                               autoComplete="off"
                               className="form-control"
+                              value={product_name}
                               name="product_name"
                               required
                               id="txtproductName"

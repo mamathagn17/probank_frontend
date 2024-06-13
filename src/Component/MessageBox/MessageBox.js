@@ -18,8 +18,8 @@ function MessageBox({ message, type, onClose, onConfirm, onCancel }) {
          
           {isConfirmationMessage && (
             <div>
-              <button  onClick={onConfirm} className="btn btn-outline-success">Yes</button>
-              <button onClick={onCancel} className="btn btn-outline-danger" style={{ marginLeft: '10px' }}>Cancel</button>
+             <button onClick={() => { onConfirm(); onClose(); }} className="btn btn-outline-success">Yes</button>
+             <button onClick={() => { onCancel(); onClose(); }} className="btn btn-outline-danger" style={{ marginLeft: '10px' }}>Cancel</button>
             </div>
           )}
         </div>

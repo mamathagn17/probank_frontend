@@ -3,7 +3,7 @@ import axios from 'axios';
 import URL from "../../URL";
 import { useLocation } from 'react-router-dom';
 import '../../Component/MessageBox/MessageBox.css';
-
+import MessageBox from '../../Component/MessageBox/MessageBox';
 function AnnualReconciliation() {
   const location = useLocation();
   const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
@@ -20,6 +20,11 @@ function AnnualReconciliation() {
   const [year, setYear] = useState('');
   const [content, setContent] = useState('');
   const perPage = 10;
+
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const URLAPIfetchclient = URL + "api/Licenserequest/fetchclients";
   const URLToUpdateField = URL + "api/annualreconciliation/UpdateField";
   const URLAPIfetchbranch = URL + "api/Licenserequest/fetchbranches";
@@ -32,6 +37,9 @@ function AnnualReconciliation() {
   };
   const handleClientChange = (event) => {
     setClient(event.target.value);
+  };
+  const handleCancelDelete = () => {
+    setShowConfirmation(false); // Hide confirmation message box
   };
 
   const fetchBranches = async () => {
@@ -61,6 +69,12 @@ function AnnualReconciliation() {
     setCurrentPage(currentPage - 1);
   };
   const markRecordsAsPending = async () => {
+    setShowConfirmation(true);
+   
+  };
+
+  const handleConfirmPending= async () => {
+    setShowConfirmation(false); // Hide confirmation message box
     try {
       const selectedIds = selectedRequest.map(request => request.client_id);
       if (selectedIds.length === 0) {
@@ -254,6 +268,33 @@ function AnnualReconciliation() {
     fetchAnnualReconciliation();
   }, [currentPage,branch,client,year]); 
 
+
+  const handleRequestError = (errorMessage) => {
+    console.error(errorMessage);
+    setMessage(errorMessage);
+    setMessageType('error');
+    setShowMessage(true);
+  };
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(URL + 'api/annualreconciliation/downloadAnnualReco', {
+        responseType: 'blob', 
+      });
+
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'AnnualRecon_logs.csv');
+      document.body.appendChild(link);
+      link.click();
+
+  
+      document.body.removeChild(link);
+    } catch (error) {
+      handleRequestError('Error occurred while downloading Annual Reconciliation.');
+    }
+  };
     return (
       <div className="container" data-aos="fade-up">
         <div className="row">
@@ -264,6 +305,11 @@ function AnnualReconciliation() {
                 <div className="col-12 col-md-6">
                   <h4>Annual Reconciliation</h4>
                 </div>
+                <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div>
               </div>
             </div>
             <form>
@@ -468,6 +514,15 @@ function AnnualReconciliation() {
 </button>
 
           </div>
+          {showConfirmation && (
+        <MessageBox
+          message="Are you sure you want to Mark it as Pending?"
+          type="confirmation"
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmPending}
+          onCancel={handleCancelDelete}
+        />
+      )}
               </div>
             </div>
           </div>

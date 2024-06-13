@@ -59,7 +59,26 @@ function ResetLogs() {
     return `${formattedDate} ${time}`; 
   }
   
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(URL + 'api/auth/downloadResetLogs', {
+        responseType: 'blob', 
+      });
 
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'reset_logs.csv');
+      document.body.appendChild(link);
+      link.click();
+
+  
+      document.body.removeChild(link);
+    } catch (error) {
+      handleRequestError('Error occurred while downloading login logs.');
+    }
+  };
 
   return (
     <div className="container" data-aos="fade-up">
@@ -72,6 +91,11 @@ function ResetLogs() {
                 <div className="col-12 col-md-6">
                   <h4>Reset Password Logs</h4>
                 </div>
+                <div className="col-md-6 text-end">
+                  <button  className="btn btn-outline-success" style={{ marginRight: '10px' }} onClick={handleDownload}>
+                    Download
+                  </button> 
+                  </div>
               </div>
             </div>
             <div className="card-body pack-short-info">
